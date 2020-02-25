@@ -1,0 +1,138 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+bool isValidHorizontal(char crossword[10][10],int r,int c,string word){
+	for(int i=0;i<word.length();i++){
+		if(crossword[r][c]=='-'||crossword[r][c] == word[i]){
+			c++;
+			continue;
+		}else{
+			return false;
+		}
+	}
+	return true;
+}
+
+bool isValidVertical(char crossword[10][10],int r,int c,string word){
+	for(int i=0;i<word.length();i++){
+		if(crossword[r][c]=='-'||crossword[r][c] == word[i]){
+			r++;
+			continue;
+		}else{
+			return false;
+		}
+	}
+	return true;
+}
+
+void setHorizontal(char crossword[10][10],int r,int c,string word,bool *helper){
+	for(int i=0;i<word.length();i++){
+		
+		if(crossword[r][c]=='-'){
+			crossword[r][c] = word[i];
+			helper[i] = true;
+		}
+		else{
+			helper[i] = false;
+		}
+		c++;
+	}
+}
+
+void setVertical(char crossword[10][10],int r,int c,string word,bool *helper){
+	for(int i=0;i<word.length();i++){
+		
+		if(crossword[r][c]=='-'){
+			crossword[r][c] = word[i];
+			helper[i] = true;
+		}
+		else{
+			helper[i] = false;
+		}
+		r++;
+	}
+}
+
+void resetHorizontal(char crossword[10][10],string word,bool *helper,int r,int c){
+	for(int i=0;i<word.size();i++){
+		if(helper[i]){
+			crossword[r][c] = '-';
+		}
+		c++;
+	}
+}
+
+void resetVertical(char crossword[10][10],string word,bool *helper,int r,int c){
+	for(int i=0;i<word.size();i++){
+		if(helper[i]){
+			crossword[r][c] = '-';
+		}
+		r++;
+	}
+}
+
+bool SolveCrossWord(char crossword[10][10],vector<string> words,int index){
+	
+	if(index==words.size())
+		return true;
+	
+	for(int i=0;i<10;i++){
+		for(int j=0;j<10;j++){
+			//Check for horizontal
+			if(crossword[i][j]=='-'||crossword[i][j]==words[index][0]){
+				if(isValidHorizontal(crossword,i,j,words[index])){
+				bool helper[words[index].size()];
+				setHorizontal(crossword,i,j,words[index],helper);
+				if(SolveCrossWord(crossword,words,index+1)){
+					return true;
+				}
+				resetHorizontal(crossword,words[index],helper,i,j);
+			}
+			if(isValidVertical(crossword,i,j,words[index])){
+				bool helper[words[index].size()];
+				setVertical(crossword,i,j,words[index],helper);
+				if(SolveCrossWord(crossword,words,index+1)){
+					return true;
+				}
+				resetVertical(crossword,words[index],helper,i,j);
+			}
+					
+				
+		}
+			
+	}
+  }
+  return false;
+}
+int main()
+{
+    char crossword[10][10];
+    string word;
+	string w = "";
+	for(int i=0;i<10;i++){
+    	for(int j=0;j<10;j++){
+    		cin>>crossword[i][j];
+		}
+	}
+	cin>>word;
+	vector<string> words;
+	
+	for(int i=0;i<word.length();i++){
+		if(word[i]!=';'){
+			w+=word[i];		
+			continue;
+		}
+		words.push_back(w);
+		w = "";
+	}
+	words.push_back(w);
+	bool flag = SolveCrossWord(crossword,words,0);
+	
+    for(int i=0;i<10;i++){
+    	for(int j=0;j<10;j++){
+    		cout<<crossword[i][j];
+		}
+		cout<<endl;
+	}
+	return 0;
+}
